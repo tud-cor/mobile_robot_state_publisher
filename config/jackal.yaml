@@ -1,0 +1,9 @@
+## Driver Parameters
+
+#publisher rate
+rate: 10
+#robot base frame
+base_frame: base_link
+#map frame
+root_frame: odom
+robot_state_topic: /robot_state
