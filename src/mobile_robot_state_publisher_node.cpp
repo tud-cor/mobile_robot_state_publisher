@@ -13,7 +13,7 @@
  * \note
  *   ROS stack name:
  * \note
- *   ROS package name: mobile_robot_stsate_publisher
+ *   ROS package name: mobile_robot_state_publisher
  *
  * \author
  *   Author: Bruno Brito, email: Bruno.deBrito@tudelft.nl
