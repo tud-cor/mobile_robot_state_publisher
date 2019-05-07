@@ -36,15 +36,7 @@ int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "mobile_robot_state_publisher_node");
 	ros::NodeHandle n;
-	//TO BE IMPLEMENTED
-	/*MobileRobotStatePublisher* MobileRobotStatePublisher = new MobileRobotStatePublisher();
 
-	if (!MobileRobotStatePublisher->initialize())
-	{
-		ROS_ERROR("Failed to initialize TwistController");
-		return -1;
-	}
-	*/
 	double node_rate;
 	if (!n.getParam(ros::this_node::getName()+"/rate", node_rate))
 	{
@@ -73,14 +65,23 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
+	string vel_state_topic;
+	if (!n.getParam(ros::this_node::getName()+"/vel_state_topic", vel_state_topic))
+	{
+		ROS_ERROR_STREAM("mobile_robot_state_publisher_node Parameter " << ros::this_node::getName()+"/vel_state_topic not set");
+		return 0;
+	}
+
 	ros::Publisher state_pub_ =
-		n.advertise<geometry_msgs::Pose>(robot_state_topic, 10);
+		n.advertise<geometry_msgs::PoseStamped>(robot_state_topic, 10);
+	ros::Publisher vel_pub_ =
+			n.advertise<geometry_msgs::PoseStamped>(vel_state_topic, 10);
 
 	tf2_ros::Buffer tfBuffer;
 	tf2_ros::TransformListener tfListener(tfBuffer);
 
 	ros::Rate rate(node_rate);
-	geometry_msgs::Pose pose_msg;
+	geometry_msgs::PoseStamped pose_msg;
 
 	//Intermidiate variables
 	double ysqr, t3, t4;
@@ -102,9 +103,9 @@ int main(int argc, char **argv)
 					 + transformStamped.transform.rotation.x * transformStamped.transform.rotation.y);
 		t4 = +1.0 - 2.0 * (ysqr + transformStamped.transform.rotation.z * transformStamped.transform.rotation.z);
 
-		pose_msg.orientation.z = atan2(t3, t4);
-		pose_msg.position.x = transformStamped.transform.translation.x;
-		pose_msg.position.y = transformStamped.transform.translation.y;
+		pose_msg.pose.orientation.z = atan2(t3, t4);
+		pose_msg.pose.position.x = transformStamped.transform.translation.x;
+		pose_msg.pose.position.y = transformStamped.transform.translation.y;
 		state_pub_.publish(pose_msg);
 
 		rate.sleep();

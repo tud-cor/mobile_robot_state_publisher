@@ -7,3 +7,4 @@ base_frame: base_link
 #map frame
 root_frame: odom
 robot_state_topic: /robot_state
+vel_state_topic: /pose
