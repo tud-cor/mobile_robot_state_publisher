@@ -28,14 +28,27 @@
 #include <ros/ros.h>
 #include <tf2_ros/transform_listener.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <geometry_msgs/Vector3.h>
 #include <geometry_msgs/TransformStamped.h>
+#include <nav_msgs/Odometry.h>
 
 using namespace std;
+
+geometry_msgs::Vector3 vel;
+
+void VelocityCallBack(const nav_msgs::Odometry& msg){
+
+vel.x = msg.twist.twist.linear.x;
+vel.y =	msg.twist.twist.linear.y;
+
+}
 
 int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "mobile_robot_state_publisher_node");
 	ros::NodeHandle n;
+	ros::Subscriber robot_state_sub_;
+	robot_state_sub_ = n.subscribe("/ekf_localization", 1, VelocityCallBack);
 
 	double node_rate;
 	if (!n.getParam(ros::this_node::getName()+"/rate", node_rate))
@@ -75,7 +88,7 @@ int main(int argc, char **argv)
 	ros::Publisher state_pub_ =
 		n.advertise<geometry_msgs::PoseStamped>(robot_state_topic, 10);
 	ros::Publisher vel_pub_ =
-			n.advertise<geometry_msgs::PoseStamped>(vel_state_topic, 10);
+			n.advertise<geometry_msgs::Vector3>(vel_state_topic, 10);
 
 	tf2_ros::Buffer tfBuffer;
 	tf2_ros::TransformListener tfListener(tfBuffer);
@@ -107,6 +120,7 @@ int main(int argc, char **argv)
 		pose_msg.pose.position.x = transformStamped.transform.translation.x;
 		pose_msg.pose.position.y = transformStamped.transform.translation.y;
 		state_pub_.publish(pose_msg);
+		vel_pub_.publish(vel);
 
 		rate.sleep();
 	}
