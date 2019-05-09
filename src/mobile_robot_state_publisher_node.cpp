@@ -95,7 +95,8 @@ int main(int argc, char **argv)
 
 	ros::Rate rate(node_rate);
 	geometry_msgs::PoseStamped pose_msg;
-
+	pose_msg.header.frame_id = root_frame;
+	pose_msg.header.stamp = ros::Time::now();
 	//Intermidiate variables
 	double ysqr, t3, t4;
 	geometry_msgs::TransformStamped transformStamped;
@@ -116,7 +117,10 @@ int main(int argc, char **argv)
 					 + transformStamped.transform.rotation.x * transformStamped.transform.rotation.y);
 		t4 = +1.0 - 2.0 * (ysqr + transformStamped.transform.rotation.z * transformStamped.transform.rotation.z);
 
-		pose_msg.pose.orientation.z = atan2(t3, t4);
+		pose_msg.pose.orientation.x = transformStamped.transform.rotation.x;
+		pose_msg.pose.orientation.y = transformStamped.transform.rotation.y;
+		pose_msg.pose.orientation.z = transformStamped.transform.rotation.z;
+		pose_msg.pose.orientation.w = transformStamped.transform.rotation.w;
 		pose_msg.pose.position.x = transformStamped.transform.translation.x;
 		pose_msg.pose.position.y = transformStamped.transform.translation.y;
 		state_pub_.publish(pose_msg);

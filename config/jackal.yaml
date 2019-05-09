@@ -5,6 +5,6 @@ rate: 40
 #robot base frame
 base_frame: base_link
 #map frame
-root_frame: odom
-robot_state_topic: /robot_state
-vel_state_topic: /pose
+root_frame: map
+robot_state_topic: /nn_jackal/pose
+vel_state_topic: /nn_jackal/velocity
