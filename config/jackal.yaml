@@ -8,3 +8,4 @@ base_frame: base_link
 root_frame: map
 robot_state_topic: /nn_jackal/pose
 vel_state_topic: /nn_jackal/velocity
+vel_subs: /odometry/filtered

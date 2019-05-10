@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "mobile_robot_state_publisher_node");
 	ros::NodeHandle n;
 	ros::Subscriber robot_state_sub_;
-	robot_state_sub_ = n.subscribe("/ekf_localization", 1, VelocityCallBack);
+
 
 	double node_rate;
 	if (!n.getParam(ros::this_node::getName()+"/rate", node_rate))
@@ -84,6 +84,15 @@ int main(int argc, char **argv)
 		ROS_ERROR_STREAM("mobile_robot_state_publisher_node Parameter " << ros::this_node::getName()+"/vel_state_topic not set");
 		return 0;
 	}
+
+    string subs_vel_;
+    if (!n.getParam(ros::this_node::getName()+"/vel_subs", subs_vel_))
+    {
+        ROS_ERROR_STREAM("mobile_robot_state_publisher_node Parameter " << ros::this_node::getName()+"/vel_subs not set");
+        return 0;
+    }
+
+    robot_state_sub_ = n.subscribe(subs_vel_, 1, VelocityCallBack);
 
 	ros::Publisher state_pub_ =
 		n.advertise<geometry_msgs::PoseStamped>(robot_state_topic, 10);
@@ -126,7 +135,7 @@ int main(int argc, char **argv)
 		state_pub_.publish(pose_msg);
 		vel_pub_.publish(vel);
 
-		rate.sleep();
+		ros::spinOnce();
 	}
 
 	return 0;
